@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tiles Detection System</title>
+<style>
+  body { 
+    background-color: #5e8bb8; 
+    font-family: Arial, sans-serif; 
+    margin: 0; 
+    padding: 0; 
+  }
+  .header {
+    background-color: #186fa4; 
+    color: white; 
+    text-align: left; 
+    padding: 28px; 
+    padding-left: 50px;
+    width: 100%; 
+    box-sizing: border-box;
+    position: relative;
+  }
+  .title-main {
+    font-size: 40px;
+    margin: 0;
+  }
+  .title-sub {
+    font-size: 23px;
+    margin-top: 4px;
+  }
+  .logo {
+    position: absolute; 
+    right: 20px; 
+    top: 20px;
+    width: 100px;
+    z-index: 1000;
+  }
+  .container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    margin: 0 auto;
+    width: 1200px; /* Adjusted width to properly fit 2x2 grid */
+    padding-bottom: 20px;
+  }
+  .tile {
+    width: 480px; 
+    height: 360px; 
+    background-color: white; 
+    margin: 35px; /* Adjusted margin to fit 2x2 grid within container */
+    position: relative;
+  }
+  .tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .label {
+    position: absolute; 
+    bottom: 10px; 
+    left: 50%; 
+    transform: translateX(-50%); 
+    padding: 5px; 
+    color: white; 
+    font-size: 0.8em;
+  }
+  .red { background-color: transparent; }
+  .yellow { background-color: transparent; }
+  .green { background-color: transparent; }
+</style>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-storage.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
+<script>
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyCuXbgnBxVevLQARSSxs6ukjMATeRGHqs4",
+    authDomain: "tiles-detect.firebaseapp.com",
+    projectId: "tiles-detect",
+    storageBucket: "tiles-detect.appspot.com",
+    messagingSenderId: "55552002339",
+    appId: "1:55552002339:web:e9f0103d73bee88c2ce496",
+    measurementId: "G-PQ9YDNMQ7K"
+  };
+
+  // Initialize Firebase
+  const app = firebase.initializeApp(firebaseConfig);
+  const database = firebase.database(app);
+
+  // Function to listen for changes in the database and update images
+  function listenForImageUpdates() {
+    const dbRef = database.ref('images');
+    dbRef.on('child_added', (snapshot) => {
+      const imageUrl = snapshot.val().url;
+      addOrUpdateTile(imageUrl);
+    });
+  }
+
+  // Function to add or update a tile with the new image
+  function addOrUpdateTile(imageUrl) {
+    const container = document.getElementById('container');
+    // 创建新的 tile 元素以显示每个新图像
+    const tile = document.createElement('div');
+    tile.className = 'tile';
+    tile.innerHTML = `<img src="${imageUrl}" alt="New image">
+                      <div class="label red">新圖片</div>`;
+    container.appendChild(tile); // 将新的 tile 添加到容器中
+  }
+
+  // Start listening for image updates when the page loads
+  document.addEventListener('DOMContentLoaded', listenForImageUpdates);
+</script>
+</head>
+<body>
+<img src="Urban Eagles.png" alt="Urban Eagles Logo" class="logo">
+<div class="header">
+  <h1 class="title-main">磁磚辨識系統</h1>
+  <div class="title-sub">Tiles Detection System</div>
+</div>
+<div class="container" id="container">
+</div>
+</body>
+</html>
